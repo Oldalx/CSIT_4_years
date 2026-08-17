@@ -1,62 +1,51 @@
-# Turing Machine for L = { w | w = 0^n 1^n }, i.e. equal number of 0's followed by 1's
-
+```python
 Q0, Q1, Q2, Q3, Q4, QR = range(6)
 
 def main():
     raw = input("\nEnter a binary string: ")
-    tape = list(raw) + ['\0'] * 10  # extra blanks to the right, like a real tape
+    tape = list(raw) + ['\0'] * 10
+    state, i = Q0, 0
 
-    curr_state = Q0
-    i = 0
+    while state not in (QR, Q4):
+        c = tape[i]
 
-    while True:
-        if curr_state == Q0:
-            if tape[i] == '0':
-                curr_state = Q1
-                tape[i] = 'x'
-                i += 1
-            elif tape[i] == 'y':
-                curr_state = Q3
-                i += 1
+        if state == Q0:
+            if c == '0':
+                tape[i], state, i = 'x', Q1, i + 1
+            elif c == 'y':
+                state, i = Q3, i + 1
             else:
-                curr_state = QR
+                state = QR
 
-        elif curr_state == Q1:
-            if tape[i] == '0':
+        elif state == Q1:
+            if c in ('0', 'y'):
                 i += 1
-            elif tape[i] == 'y':
-                i += 1
-            elif tape[i] == '1':
-                curr_state = Q2
-                tape[i] = 'y'
+            elif c == '1':
+                tape[i], state, i = 'y', Q2, i - 1
+            else:
+                state = QR
+
+        elif state == Q2:
+            if c in ('0', 'y'):
                 i -= 1
+            elif c == 'x':
+                state, i = Q0, i + 1
             else:
-                curr_state = QR
+                state = QR
 
-        elif curr_state == Q2:
-            if tape[i] in ('0', 'y'):
-                i -= 1
-            elif tape[i] == 'x':
-                curr_state = Q0
+        elif state == Q3:
+            if c == 'y':
                 i += 1
+            elif c == '\0':
+                state = Q4
             else:
-                curr_state = QR
+                state = QR
 
-        elif curr_state == Q3:
-            if tape[i] == 'y':
-                i += 1
-            elif tape[i] == '\0':
-                curr_state = Q4
-            else:
-                curr_state = QR
-
-        if curr_state in (QR, Q4):
-            break
-
-    if curr_state == Q4:
+    if state == Q4:
         print("\nThe string is accepted")
     else:
         print("\nThe string is not accepted")
 
 if __name__ == "__main__":
     main()
+```
